@@ -1,21 +1,30 @@
 # BayesRCO
 
-A software package that includes BayesCpi, BayesR, BayesRC, and two extensions of BayesRC to overlapping data: BayesRC+ and BayesRCpi <br/>
+*BayesRCO* is a software for complex trait prediction with Bayesian hierarchical models using genome-wide genetic variation grouped into potentially overlapping annotation categories based on prior biological information (e.g., functional annotations, candidate gene lists, known causal variants).
 
-All the info are available here: <br/> [PDF TBA]
+*BayesRCO* includes implementations for three state-of-the-art Bayesian hierarchical models:
 
-## Citation information
+-   *BayesCpi*: a two-class model, corresponding to null and non-null effects for genetic variants
+-   *BayesR*: a four-class model, corresponding to null, small, medium, and large effects for genetic variants
+-   *BayesRC*: a BayesR model incorporating disjoint prior categories for genetic variants.
 
-If you use BayesRCO in your own work, please cite our work:
+In addition, *BayesRCO* includes two novel extensions of *BayesRC* to incorporate potentially overlapping prior categories for genetic variants:
 
--   Mollandin, F., Rau, A., and Croiseau, P. (2021) An evaluation of the interpretability and predictive performance of the BayesR model for genomic prediction. [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.10.23.351700v1)
+-   *BayesRC+*: a BayesR model where multi-categories are assumed to cumulatively impact variant estimates
+-   *BayesRCpi*: a BayesR model where the catégorization of multi-annotated variants is stochastically modeled.
+
+The core code of *BayesRCO* is largely based off the Fortran implementation of [bayesR](https://github.com/syntheke/bayesR/tree/master/old) (version 0.75).
+
+## Quick start
+
+A full user's guide with details on compilation, as well as a a full description of input data formats/parameters and example scripts, can be found [here](https://github.com/fmollandin/BayesRCO). [TODO]
 
 ## References
 
--   BayesCpi
--   BayesR
--   BayesRC
--   Moser GitHub
+-   *BayesCpi*: Habier, D. et al. (2011) Extension of the Bayesian alphabet for genomic selection. **BMC Bioinformatics**, 12(1):186. <https://doi.org/10.1186/1471-2105-12-186>
+-   *BayesR*: Moser, G. et al. (2015) Simultaneous discovery, estimation and prediction analysis of complex traits using a Bayesian mixture model. **PLoS Genetics**, 11(4): e1004969. <https://doi.org/10.1371/journal.pgen.1004969>
+-   *BayesRC*: MaxLeod, I. M. et al. (2016) Exploiting biological priors and sequence variants enhances QTL discovery and genomic prediction of complex traits. **BMC Genomics**, 17:144. <https://doi.org/10.1186/s12864-016-2443-6>
+-   *bayesR original source code*: GitHub [repo](https://github.com/syntheke/bayesR)
 
 ## Funding
 
@@ -29,4 +38,4 @@ The GENE-SWitCH project has received funding from the European Union's Horizon 2
 
 ## License
 
-GNU GPL 3
+The *BayesRCO* package is free software; you can copy or redistribute it under the terms of the GNU GPL-3 License. This program is distributed in the hope that it will be useful, but without any warranty. See the [GNU GPL-3 License](https://www.gnu.org/licenses/gpl-3.0.en.html) for more details.
