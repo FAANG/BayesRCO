@@ -3,3 +3,5 @@ A software package that includes BayesCpi, BayesR, BayesRC, and two extensions o
 
 All the info are available here: <br/>
 [PDF TBA]
+
+Test...
