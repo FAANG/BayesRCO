@@ -17,7 +17,7 @@ The core code of *BayesRCO* is largely based off the Fortran implementation of [
 
 ## Quick start
 
-A full user's guide with details on compilation, as well as a a full description of input data formats/parameters and example scripts, can be found [here](https://github.com/fmollandin/BayesRCO). [TODO]
+A full user's guide with details on compilation, as well as a a full description of input data formats/parameters and example scripts, can be found [here](https://github.com/fmollandin/BayesRCO/blob/main/doc/BayesRCO.pdf).
 
 ## References
 
