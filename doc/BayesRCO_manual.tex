@@ -1,0 +1,356 @@
+%% Overleaf			
+%% Software Manual and Technical Document Template	
+%% 									
+%% This provides an example of a software manual created in Overleaf.
+
+\documentclass{ol-softwaremanual}
+
+% Packages used in this example
+\usepackage{graphicx}  % for including images
+\usepackage{microtype} % for typographical enhancements
+\usepackage{minted}    % for code listings
+\usepackage{amsmath}   % for equations and mathematics
+\setminted{style=friendly,fontsize=\small}
+\renewcommand{\listoflistingscaption}{List of Code Listings}
+\usepackage[a4paper,top=4.2cm,bottom=4.2cm,left=3.5cm,right=3.5cm]{geometry} % for setting page size and margins
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage[export]{adjustbox}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{xcolor} 
+\usepackage{dsfont}
+\usepackage[utf8]{inputenc}
+\usepackage{xr-hyper}
+\usepackage{hyperref}
+\usepackage{tcolorbox}
+\usepackage{natbib}
+\bibliographystyle{abbrvnat}
+\setcitestyle{authoryear} %Citation-related commands
+
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\operatorname{max}}\;}
+\newcommand{\revision}[1]{\textcolor{red}{#1}}
+
+
+% Custom macros used in this example document
+\newcommand{\doclink}[2]{\href{#1}{#2}\footnote{\url{#1}}}
+\newcommand{\cs}[1]{\texttt{\textbackslash #1}}
+
+% Frontmatter data; appears on title page
+\title{BayesRCO User Guide
+}
+\version{0.0.1}
+\author{Fanny Mollandin$^{1}$, Pascal Croiseau$^{1}$, Andrea Rau$^{1,2}$\\ \vspace*{.5cm}
+{\footnotesize
+$^{1}$ Université Paris-Saclay, INRAE, AgroParisTech, GABI\\
+$^{2}$ BioEcoAgro Joint Research Unit, INRAE, Université de Liège, Université de Lille, Université de Picardie Jules Verne\\ \vspace*{.5cm}
+}}
+\softwarelogo{
+\includegraphics[width=6cm]{Images/logo_INRAE.png}\hspace*{.5cm}
+\includegraphics[width=6cm, clip=true, trim = 0 1.1in 0 0]{Images/GENE-SWitCH_logo.jpg}\\ \vspace*{1in}
+}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+%\listoflistings
+\newpage
+
+\section{Overview}
+The BayesRCO software includes five different Bayesian genomic prediction models, including three state-of-the art approaches and two novel algorithms:
+
+\begin{itemize}
+    \item BayesC$\pi$ \citep{habier_extension_2011}
+    \item BayesR \citep{erbe_improving_2012}
+    \item BayesRC \citep{macleod_exploiting_2016}
+    \item BayesRC$\pi$
+    \item BayesRC+
+\end{itemize}  
+
+All five models are Bayesian Gaussian mixture models for the genomic prediction of complex traits using genetic variation such as single nucleotide polymorphisms (SNPs), with parameters estimated using a Markov Chain Monte Carlo (MCMC) algorithm. These prediction methods also facilitate a study of the underlying genomic architecture of these traits, in particular by enabling QTL mapping. The two new methods implemented in BayesRCO, BayesRC+ and Bayes$\pi$, both aim to integrate prior categorizations of SNPs arising from multiple, potentially overlapping annotations. 
+
+This document is intended to describe the underlying models of BayesRCO, provide help for download and compilation of the software, and describe the various inputs, outputs, and options provided by the software.
+\vspace*{.5cm}
+
+\begin{tcolorbox}
+{\it Note}: The core of the BayesRCO software is based on version 0.75 of the \href{https://github.com/syntheke/bayesR/tree/master/old}{BayesR} software described and implemented by \citet{moser_simultaneous_2015}, although further functionalities and outputs have been added (including options for the BayesRC$\pi$ and BayesRC+ algorithms). As many of the input arguments in BayesRCO are the same as those of \href{https://github.com/syntheke/bayesR/tree/master/old}{BayesR}, there are many similarities between this document and the BayesR \href{https://github.com/syntheke/bayesR/blob/master/old/doc/BayesRmanual-0.75.pdf}{User Manual}.
+\end{tcolorbox}
+
+
+\section{Bayesian genomic prediction models}
+
+\subsection{SNP effect prior distributions}
+
+All five Bayesian genomic prediction models included in BayesRCO exploit the same underlying linear model, which aims to obtain an accurate prediction of a vector of phenotypes $\mathbf{y}$ by best estimating a vector of SNP effects $\beta$: 
+
+\begin{align*}
+\mathbf{y}&=\mu \mathds{1}_n+\mathbf{X}\boldsymbol{\beta}+{\mathbf{e}}, \\
+{\mathbf{e}} &\sim N(0,\mathbf{I}_n\sigma^2_e) \nonumber
+\end{align*}
+
+\noindent The five Bayesian models included in BayesRCO can be differentiated by the prior distribution attributed to $\boldsymbol{\beta}$, as indicated in the table below. In each model, SNP effects are assumed to follow a Gaussian mixture distribution with varying numbers of components: 2 (null and non-null) for BayesC$\pi$, or 4 (null, low, medium and high) for all of the other methods. In addition, three of the models (BayesRC, BayesRC$\pi$ and BayesRC+) additionally incorporate a prior known categorization of SNPs (e.g., according to functional information, or lists of candidate or causal mutations).
+
+\begin{table}[h]
+    \resizebox{\linewidth}{!}{
+    \begin{tabular}{ l  l  l l}
+    \hline
+\multirow{2}{*}{Method }      & \multirow{2}{*}{SNP effect prior distribution} & \multirow{2}{*}{\# effect classes} & \multirow{2}{*}{Prior Annotations}  \\
+& & & \\ \hline
+\\
+BayesC$\pi$      &  $\beta_i  \sim \pi\mathcal{N}(0,0)+(1-\pi)\mathcal{N}(0,\sigma_\beta^2)$                         & 2 & No\\ 
+BayesR       &  $\beta_i \sim \sum_{K=1}^4\pi_K\mathcal{N}(0,k \sigma_g^2)$                         & 4    & No                   \\  
+BayesRC      &  $\beta_i | a = A(i) \sim \sum_{K=1}^4\pi_{K,a}\mathcal{N}(0,k \sigma_g^2)$                      &4   & Yes, disjointed\\ 
+BayesRC+     &           $\beta_i | a\in \mathbf{A}(i)\sim \alert{\sum_{a\in \mathbf{A}(i)}}\sum_{K=1}^4\pi_{K,a}N(0,k\sigma_g^2)$                 & 4   & Yes, overlapping     \\ 
+BayesRC$\pi$ &        $\beta_i | a\in \mathbf{A}(i)\sim \alert{\sum_{a\in \mathbf{A}(i)}p_{i,a}}\sum_{K=1}^4\pi_{K,a}N(0,k\sigma_g^2)$                    &     4 & Yes, overlapping   \\  \\   \hline
+    \end{tabular}}
+\end{table}
+
+\noindent where $\sigma_g^2$ is the total additive genetic variance, $\pi=(\pi_1,\pi_2,\pi_3,\pi_4)$ the mixing proportions such that $\sum_{i=1}^4\pi_i=1$, $p_{i,a}$ the mixing proportions of SNP $i$ in its set of annotations $\mathbf{A}(i)$ such that $\sum_{a \in \mathbf{A}(i)}p_{a,i}=1$, and $k=\{0,10^{-5}, 10^{-4}, 10^{-3}\}$.
+
+\subsection{Gibbs sampler algorithm}
+
+As an exact computation of the posterior distribution is intractable for this set of models, Bayesian inference is performed in all cases by obtaining draws from the posterior distribution using a Gibbs sampler. Model parameters are subsequently estimated using the posterior mean across iterations, after excluding a burn-in phase and thinning draws. By default, the Gibbs sampler runs for a total of 50,000 iterations, including 20,000 as a burn-in and a thinning rate of 10.
+
+\subsection{Novelty of BayesRC$\pi$ and BayesRC+}
+
+We developed BayesRC$\pi$ and BayesRC+ as an extension of BayesRC to handle cases where prior categorizations of SNPs are overlapping rather than disjointed (i.e., where SNPs can potentially be assigned to multiple categories). 
+
+In the case of BayesRC$\pi$, SNP effects are assumed to follow a mixture of mixtures distribution; that we assume that SNPs follow a mixture distribution over their corresponding annotation categories, and within a given annotation in turn, SNP effects are modeled with a 4-component Gaussian mixture distribution as in the BayesR model. Concretely, within a given iteration of the Gibbs sampler used for estimation, SNPs are assigned to the annotation category which maximizes its likelihood given the current estimates of the other model parameters. Note that this step is analogous to that in the standard BayesR algorithm of assigning SNPs to one of the four SNP effect classes based on a likelihood calculation and the current estimates of model parameters. 
+
+In the case of BayesRC+, we assume that multiple annotation categories cumulatively impact the estimate of SNP effects; that is, we assume that multiple annotation categories should have an additive effect of estimated SNP effects. 
+
+
+
+\section{Download \& Compilation}
+
+The core of the BayesRCO software is based on version 0.75 of the \href{https://github.com/syntheke/bayesR/tree/master/old}{BayesR} software by \citet{moser_simultaneous_2015}. As such, a very similar file structure is used: \\
+\begin{itemize}
+    \item {\it RandomDistributions.f90}: auxiliary file containing various random generator %[What we added from Moser?] 
+ \item {\it baymodsRCO.f90}: support module for BayesRCO containing common variables and routines (note: unchanged from version 0.75 of \href{https://github.com/syntheke/bayesR/tree/master/old}{BayesR} 
+)
+\item {\it bayesRCO.f90}: main program 
+%[j'ai pas mis les autre compilateur ifort, grave ?]
+\end{itemize}
+BayesRCO can be compiled with a FORTRAN95 compiler on a Unix operating system using the following command:
+\noindent\begin{minted}{fortran}
+gfortran RandomDistributions.f90 baymodsRCO.f90 bayesRCO.f90 –o bayesRCO
+\end{minted}
+
+\section{Inputs}
+
+\subsection{Data}
+
+BayesRCO requires PLINK binary ped file format. It requires *.bim and *.fam files to determine the number of SNPs and the number of individuals, and a *.bed file for the genotype information.  
+\begin{description}
+\item[Genotype data:] BayesRCO requires genotypes in PLINK binary format in default-SNP major mode. Since BayesRCO includes all genotypes in the model, samples missing a genotype call cannot simply be omitted. Missing genotypes are replaced by the mean genotype value of a given marker.
+\item[Phenotype data:] The program reads column 6 as the phenotype column from a PLINK *.fam file. A different phenotype column can be specified by using the  \texttt{–n [num]} option, where \texttt{–n 1} uses the original 6th column (default), \texttt{–n 2} uses column 7 and so forth. Missing phenotypes (or phenotypes to be predicted) must be coded as \texttt{NA}.
+\end{description}
+
+\subsection{Prior annotation categories for SNPs}
+
+We can represent SNP annotation categories as a binary design matrix, with SNPs in rows and annotation categories in columns. We differentiate two types of annotation matrix, non-overlapping (for BayesRC) or potentially overlapping (for BayesRC+ or BayesRC$\pi$). An example of a \textbf{non-overlapping annotation} matrix, such that all SNPs are assigned to a single annotation, is as follows:
+\[\begin{pmatrix}
+0 & 0 & 1\\
+0 & 1 & 0\\
+. & . & . \\
+1 & 0 & 0 \\
+1 & 0 & 0
+\end{pmatrix}\]
+An example of an \textbf{overlapping} annotation matrix, such that all SNPs are assigned to {\it at least} one annotation, is as follows: 
+\[\begin{pmatrix}
+0 & 1 & 1\\
+0 & 1 & 0\\
+. & . & . \\
+1 & 0 & 0 \\
+1 & 0 & 1
+\end{pmatrix}\]
+In the latter example, the first SNP has been categorized as belonging to annotations 2 and 3, while the second SNP has been categorized as belonging only to annotation 2.
+
+As recommended by \citet{macleod_exploiting_2016}, it is important to have sufficiently large annotation categories ($\geq$ 1000 SNPs) to avoid difficulties to estimate the $\pi_a$ parameters.
+
+\clearpage
+\subsection{General Inputs}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|l|}
+    \hline
+      \textbf{Input} & \textbf{Description} &\textbf{Default} \\ 
+      \hline
+      \hline
+-bfile & prefix PLINK binary files & None \\
+-out &prefix for output& None \\
+-n&phenotype column& 1 \\
+-vara&SNP variance prior&0.01\\
+-vare&error variance prior&0.01\\
+-dfvara&degrees of freedom Va &-2.0\\
+-dfvare&degrees of freedom Ve&-2.0\\
+-delta&prior for Dirichlet&1.0\\
+-msize&number of SNPs in reduced update&0\\
+-mrep&number of full cycles in reduced update&5000\\
+-numit&length of MCMC chain&50000\\
+-burnin&burnin steps&20000\\
+-thin&thinning rate&10\\
+-ndist&number of mixture distributions&4\\
+-gpin&effect sizes of mixtures (\% x Va)& 0.0,0.0001,0.001,0.01\\
+-seed&initial value for random number&0\\
+-predict&perform prediction&f\\
+-snpout&output detailed SNP info&f\\
+-cat&output SNP categories per iteration & None\\
+-beta&output SNP effect per iteration&None\\
+-permute&permute order of SNP&f\\
+-model&model summary file (for prediction) & None\\
+-freq&SNP frequency file (for prediction)&None\\
+-param&SNP effect file (for prediction) & None\\
+-ncat&number of SNP annotations&1\\
+-catfile&SNP annotation matrix file& None\\
+-additive&run BayesRC+&f\\
+-bayesCpi&run BayesC$\pi$&f\\
+\hline
+    \end{tabular}
+\end{table}
+
+
+\color{black}
+
+\subsection{Running BayesRCO}
+
+BayesRCO is run in two steps: a first for the training data (and thus the estimation of model parameters) and a second for prediction; we thus use two separate datasets, one including phenotype values, and one without (be careful, the SNPs must match between the two datasets!). We illustrate here how to launch these two features. By default, the software runs a BayesRC$\pi$ model.
+
+\subsubsection{BayesRC$\pi$}
+
+\begin{tcolorbox}
+
+\texttt{\textit{path}/bayesRCO -bfile [prefix\_learning] -out [prefix\_learning] -ncat [number of annotations] -catfile [annotation\_matrix]} \\
+
+\texttt{\textit{path}/bayesRCO -bfile [prefix\_validation] -out [prefix\_validation] -model [prefix\_learning].model -freq [prefix\_learning].frq -param [prefix\_learning].param -ncat [number of annotations] -catfile [annotation\_matrix] }
+\end{tcolorbox}
+
+\subsubsection{BayesRC+}
+
+To run BayesRC+, use the flag \texttt{-additive} in the training step:
+
+\begin{tcolorbox}
+
+\texttt{\textit{path}/bayesRCO -bfile [prefix\_learning] -out [prefix\_learning] -ncat [number of annotations] -catfile [annotation\_matrix] -additive} \\
+
+\texttt{\textit{path}/bayesRCO -bfile [prefix\_validation] -out [prefix\_validation] -model [prefix\_learning].model -freq [prefix\_learning].frq -param [prefix\_learning].param -ncat [number of annotations] -catfile [annotation\_matrix] }
+\end{tcolorbox}
+
+\subsubsection{BayesRC}
+
+As BayesRC is a special case of BayesRC$\pi$ or BayesRC+ where no SNPs are assigned to more than one prior annotation category, you can simply run either of the two previous methods with the appropriate disjoint annotation matrix.
+
+\subsubsection{BayesR}
+
+As BayesR is a special case of BayesRC with a single prior annotation category to which all SNPs are assigned, it can be run in the same way as for BayesRC using an annotation matrix corresponding to a vector (the same length as the number of SNPs) of 1's.
+%\[\begin{pmatrix}
+% 1\\
+%1 \\
+%\ldots  \\
+%1  \\
+%1 
+%\end{pmatrix}\] 
+In this case, as the default number of \texttt{ncat} is 1, there is no need to specify this option.
+
+\subsubsection{BayesC$\pi$}
+
+Finally, BayesC$\pi$ can be run in a similar manner as for BayesR with the additional flag \texttt{-bayesCpi}.
+
+\subsubsection{Options}
+
+
+\begin{description}
+\item[Prior distributions for variance components:] Prior inverted-chi squared distribution can be specified for both additive and residual variances ($\sigma_g^2$ and $\sigme_e^2$). Scale and degrees of freedom (df) for the variance components are required. Flat (improper) distributions can be specified by setting \texttt{df} to -2. It is also possible to specify the heritability of the trait by setting \texttt{dfvara} to -3.0 (i.e. \texttt{-dfvara -3.0}). In this case the scale parameter is treated as the heritability and the SNP-based variance is set (fixed) to $\sigma_g^2$=heritability$\times \sigma_y^2$ ($\sigma_y^2$ being the phenotypic variance).
+\item[Effect size Dirichlet prior (all):] The default is to use a uniform and almost uninformative prior for the mixture distribution with a pseudo-observation of 1 (SNP) for each class. Different priors can be specified using the \texttt{delta [num]} option. For example, \texttt{-delta 3,2,1} specifies a prior with 3, 2 and 1 pseudo-observations for classes 1 to 3 of a 3-component mixture model, \texttt{-delta 2} sets the prior to 2 for all mixture components.
+\item[Annotation Dirichlet prior (BayesRC$\pi$)] For the moment there is no parameter to change the value of the annotation assignment prior. Such an option may be added in future versions.
+\item[Mixture model:] The BayesR, BayesRC, BayesRC+ and BayesRC$\pi$ models assume that the true SNP effect is derived from a series of normal distributions. The default models uses 4 mixture distributions with SNP variances of 0, 0.0001, 0.001 and 0.01, so that the variance (S) of the j$^{\mathsf{th}}$ SNP has 4 possible values:  S1=0, S2=0.0001$\times \sigma_g^2$, S3=0.001$\times \sigma_g^2$, S4=0.01$\times \sigma_g^2$. Different mixture models can be specified using 
+the \texttt{–ndist [num]} and \texttt{–gpin [num]} options. For example, \texttt{–ndist 3 –gpin 0.0,0.001,0.05} fits a 3 component mixture with SNP variances S1=0, S2=0.001$\times \sigma_g^2$, S3=0.05$\times \sigma_g^2$. 
+\item[MCMC sampling:] The default is to use a chain length of 50,000 samples (\texttt{–numit}) with the first 20,000 samples (\texttt{–burnin}) being discarded, and using every 10$^{\mathsf{th}}$ sample (\texttt{–thin}) for posterior inference. To improve mixing, one can use the option \texttt{–permute} to update SNP effects in random order. 
+\end{description}
+
+
+
+ 
+
+
+\section{Outputs}
+
+The outputs all have the same name as specified when launching the software, followed by a suffix corresponding to their type, as follows: 
+
+\subsection{Frequency file}
+\textit{name\_output.type}: One column containing the SNP allele 2 frequency.
+
+\subsection{Log File}
+
+The file name prefix is as specified by \texttt{–out [prefix\_training]}. The suffix ‘.log’ is appended to give the file name. This is a descriptive file and provides a summary of the run parameters used and the number of records processed.  
+
+\subsection{Frequency File}
+
+Contains allele frequency of the ‘2’ allele. The suffix ‘.frq’ is appended to the prefix. This file is required for scaling and centering genotypes for prediction analysis. The SNP order has to be the same as the genotype input file.  
+
+\subsection{Model File}
+
+The suffix ‘model’ is appended to the output prefix. This file contains means of the posterior samples of model parameters:
+\begin{description}
+\item[Mean:] intercept
+\item[Nsnp:] number of SNPs in model 
+\item[Va:] genetic variance explained by SNPs ($\sigma_g^2$)
+\item[Nk1\_1,…,Nkk\_j:] residual variance ($\sigma_e^2$)
+\item[Pk1\_1,…,Pkk\_j:] proportion of SNPs in mixture component 1 to $k$ and annotation 1 to $j$
+\item[Vk1\_1,…,Vkk\_j:] sum of squares of SNP effects in mixture component 1 to $k$ and annotation 1 to $j$ 
+
+\end{description}
+
+
+\subsection{Hyperparameter file}
+
+The file \textit{prefix.hyp} gives posterior parameter estimates for each MCMC sample: 
+
+\begin{description}
+    \item[Replicate:] iteration number
+    \item[Nsnp:] number of SNPs in model
+    \item[Va:] genetic variance explained by SNPs
+    \item[Ve:] residual variance
+    \item[Nk1\_1,…,Nkk\_j:] number of SNPs in mixture components 1 to $k$ and annotation 1 to $j$
+    \item[Pk1\_1,…,Pkk\_j: ] proportion of SNPs in mixture component 1 to $k$ and annotation 1 to $j$
+    \item[Vk1\_1,…,Vkk\_j:] sum of squares of SNP effects in mixture component 1 to $k$ and annotation 1 to $j$
+\end{description}
+
+
+\subsection{Parameter file}
+
+The suffix ‘param’ is appended to the output prefix. The SNP order is the same as the genotype input file. This file contains mean posterior estimates for each individual SNP:
+
+\begin{description}
+    \item[PIP\_1, ..., PIP\_k:] Posterior inclusion probabilities of the SNP in mixture classes 1 to $k$
+    \item[beta:] posterior SNP effect 
+    \item[PAIP\_1, ..., PAIP\_j:]  Posterior annotation inclusion probabilities of the SNP in annotation 1 to $j$ (useful for BayesRC$\pi$, otherwise gives the annotations each SNP belong to)
+    \item[Vbeta:] variance of the posterior SNP effects across iterations
+    \item[Vi:] posterior variance of the SNP effects
+\end{description}
+
+
+\subsection{Genetic value file}
+
+This file outputs the predicted genomic values (GVs). The output prefix is used to give the file name \textit{prefix.gv}.  
+
+\subsection{Optional files}
+
+\begin{description}
+    \item[\texttt{-snpout}:] provide output in sparse format \texttt{mixture class:SNP#:effect size}. The SNP number (SNP \#) corresponds to the row number of the SNP in the PLINK *.bim file. 
+    \item[\texttt{-cat}:] output SNP categories per iteration 
+    \item[\texttt{-beta}:] output SNP effect per iteration
+\end{description}
+
+\bibliographystyle{plainnat}
+\bibliography{Biblio_110521}
+
+\subsection*{Funding}
+
+This work is part of the \href{https://www.gene-switch.eu/}{GENE-SWitCH} project that has received funding from the European Union’s Horizon 2020 Research and
+Innovation Programme under the grant agreement number 817998. 
+
+\end{document}
