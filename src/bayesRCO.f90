@@ -215,11 +215,11 @@ if(mcmc) then
                   enddo
                   do j=1,ncat
                      if (C(snploc,j)==1) THEN
-                        ss(j)=p(1,j)*exp(-maxtemp)
+                        ss(j)=p(1,j)*exp(-maxs)
                         do kk=2,ndist 
                            detV=gp(kk)*zz_vare+1.0d0
                            uhat=rhs/(zz+vare_gp(kk))
-                           ss(j)=ss(j)+p(kk,j)*detV**(-0.5d0)*exp(0.5d0*uhat*rhs/vare-maxtemp)
+                           ss(j)=ss(j)+p(kk,j)*detV**(-0.5d0)*exp(0.5d0*uhat*rhs/vare-maxs)
                         enddo
                         ss(j)=dlog(pia(j))+dlog(ss(j))
                      endif
