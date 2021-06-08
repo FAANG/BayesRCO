@@ -100,14 +100,14 @@ All five Bayesian genomic prediction models included in BayesRCO exploit the sam
 & & & \\ \hline
 \\
 BayesC$\pi$      &  $\beta_i  \sim \pi\mathcal{N}(0,0)+(1-\pi)\mathcal{N}(0,\sigma_\beta^2)$                         & 2 & No\\ 
-BayesR       &  $\beta_i \sim \sum_{K=1}^4\pi_K\mathcal{N}(0,k \sigma_g^2)$                         & 4    & No                   \\  
-BayesRC      &  $\beta_i | a = A(i) \sim \sum_{K=1}^4\pi_{K,a}\mathcal{N}(0,k \sigma_g^2)$                      &4   & Yes, disjointed\\ 
-BayesRC+     &           $\beta_i | a\in \mathbf{A}(i)\sim \alert{\sum_{a\in \mathbf{A}(i)}}\sum_{K=1}^4\pi_{K,a}N(0,k\sigma_g^2)$                 & 4   & Yes, overlapping     \\ 
-BayesRC$\pi$ &        $\beta_i | a\in \mathbf{A}(i)\sim \alert{\sum_{a\in \mathbf{A}(i)}p_{i,a}}\sum_{K=1}^4\pi_{K,a}N(0,k\sigma_g^2)$                    &     4 & Yes, overlapping   \\  \\   \hline
+BayesR       &  $\beta_i \sim \sum_{\ell=1}^4\pi_\ell\mathcal{N}(0,k \sigma_g^2)$                         & 4    & No                   \\  
+BayesRC      &  $\beta_i | a = A(i) \sim \sum_{\ell=1}^4\pi_{\ell,a}\mathcal{N}(0,k \sigma_g^2)$                      &4   & Yes, disjointed\\ 
+BayesRC+     &           $\beta_i | a\in \mathbf{A}(i)\sim \alert{\sum_{a\in \mathbf{A}(i)}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                 & 4   & Yes, overlapping     \\ 
+BayesRC$\pi$ &        $\beta_i | a\in \mathbf{A}(i)\sim \alert{\sum_{a\in \mathbf{A}(i)}p_{i,a}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                    &     4 & Yes, overlapping   \\  \\   \hline
     \end{tabular}}
 \end{table}
 
-\noindent where $\sigma_g^2$ is the total additive genetic variance, $\pi=(\pi_1,\pi_2,\pi_3,\pi_4)$ the mixing proportions such that $\sum_{i=1}^4\pi_i=1$, $p_{i,a}$ the mixing proportions of SNP $i$ in its set of annotations $\mathbf{A}(i)$ such that $\sum_{a \in \mathbf{A}(i)}p_{a,i}=1$, and $k=\{0,10^{-5}, 10^{-4}, 10^{-3}\}$.
+\noindent where $\sigma_g^2$ is the total additive genetic variance, $\pi=(\pi_1,\pi_2,\pi_3,\pi_4)$ the mixing proportions such that $\sum_{\ell=1}^4\pi_\ell=1$, $p_{i,a}$ the mixing proportions of SNP $i$ in its set of annotations $\mathbf{A}(i)$ such that $\sum_{a \in \mathbf{A}(i)}p_{i,a}=1$, and $k=\{0,10^{-4}, 10^{-3}, 10^{-2}\}$.
 
 \subsection{Gibbs sampler algorithm}
 
@@ -119,7 +119,7 @@ We developed BayesRC$\pi$ and BayesRC+ as an extension of BayesRC to handle case
 
 In the case of BayesRC$\pi$, SNP effects are assumed to follow a mixture of mixtures distribution; that we assume that SNPs follow a mixture distribution over their corresponding annotation categories, and within a given annotation in turn, SNP effects are modeled with a 4-component Gaussian mixture distribution as in the BayesR model. Concretely, within a given iteration of the Gibbs sampler used for estimation, SNPs are assigned to the annotation category which maximizes its likelihood given the current estimates of the other model parameters. Note that this step is analogous to that in the standard BayesR algorithm of assigning SNPs to one of the four SNP effect classes based on a likelihood calculation and the current estimates of model parameters. 
 
-In the case of BayesRC+, we assume that multiple annotation categories cumulatively impact the estimate of SNP effects; that is, we assume that multiple annotation categories should have an additive effect of estimated SNP effects. 
+In the case of BayesRC+, we assume that multiple annotation categories cumulatively impact the estimate of SNP effects; that is, we assume that multiple annotation categories have an additive impact on estimated SNP effects. At each iteration of the Gibbs sampler, the conditional effect of a given SNP is estimated for each of its associated annotation categories in turn, and its total effect is subsequently calculated as the sum over all of its per-annotation effects. Although this assumption of additivity may be strong, it may be useful for avoiding the underestimation of SNP effects in cases where multi-annotated SNPs can be expected to have larger effects than those with a single (or no) annotation category.
 
 
 
@@ -170,7 +170,6 @@ In the latter example, the first SNP has been categorized as belonging to annota
 
 As recommended by \citet{macleod_exploiting_2016}, it is important to have sufficiently large annotation categories ($\geq$ 1000 SNPs) to avoid difficulties to estimate the $\pi_a$ parameters.
 
-\clearpage
 \subsection{General Inputs}
 
 \begin{table}[h!]
