@@ -473,21 +473,25 @@ if(mcmc) then
                call permutate(permvec,nloci)
             endif
             
-            do j=1,ncat
-               log_p(1,j)=dlog(p(1,j))
-               do i=2,ndist
-                  log_p(i,j)=dlog(p(i,j))
-               enddo
-               do k=1,nloci
-                  snploc=permvec(k)
+            do k=1,nloci
+               snploc=permvec(k)
+               gk=g(snploc)
+               z => X(:,snploc)
+               zz=xpx(snploc)
+               zz_vare=zz/vare
+               if(vsnptrack(snploc) > 1) then
+                  yadj=yadj+z*gk
+               endif
+               rhs= dot_product(yadj,z)
+               do j=1,ncat
+                  log_p(1,j)=dlog(p(1,j))
+                  do i=2,ndist
+                     log_p(i,j)=dlog(p(i,j))
+                  enddo
                   if (C(snploc,j) == 1) THEN
                      z => X(:,snploc)
                      zz=xpx(snploc)
                      zz_vare=zz/vare
-                     gk=gannot(snploc,j)
-                     if(snptracker(snploc,j) > 1) then
-                        yadj=yadj+z*gk
-                     endif
                      rhs= dot_product(yadj,z)
                      lhs=zz/vare
                      s(1)=log_p(1,j)
@@ -529,26 +533,27 @@ if(mcmc) then
                         endif
                      enddo
                      snptracker(snploc,j)=indistflag
-                     vsnptrack(snploc)=indistflag
+                   !  vsnptrack(snploc)=indistflag
                      if(indistflag==1) then
                         gk=0.0d0
                      else
                         v1=zz+vare/gp(indistflag)
                         gk=rand_normal(rhs/v1, dsqrt(vare/v1))
                         yadj=yadj-z*gk  
-                        included=included+1
+               !         included=included+1 
                      endif
                      gannot(snploc,j)=gk
                      if(msize>0 .and. rep>mrep) then
                         if(included>=msize) exit
                      endif
                   endif ! is the loci in the categorie
-               enddo ! each loci
-            enddo ! each categorie
+               enddo ! each categorie
+            enddo ! each loci
             
             !Sum loci effects for each iteration
             g=sum(gannot,dim=2)
-            
+            vsnptrack=maxval(snptracker,dim=2)
+
             do j=1,ncat
                do i=1,ndist
                   snpindist(i,j)=count(snptracker(:,j)==i)
@@ -557,12 +562,10 @@ if(mcmc) then
             enddo
             ! How many loci included?
             includedloci=0d0
-            do j=1,ncat
-               do i=1,nloci
-                  if (snptracker(i,j)>1) THEN
-                     includedloci(i)=1
-                  endif
-               enddo
+            do i=1,nloci
+               if (vsnptrack(i)>1) THEN
+                  includedloci(i)=1
+               endif
             enddo
             included=sum(includedloci)
             
