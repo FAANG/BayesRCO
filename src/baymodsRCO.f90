@@ -43,7 +43,7 @@
   double precision :: detV, maxs, maxtemp
   double precision, dimension(:), allocatable :: xpx, s, stemp, ss, includedloci, sstemp
   double precision, pointer :: z(:)
-  integer, allocatable, dimension(:)::permvec
+  integer, allocatable, dimension(:)::permvec, permannot
   !Auxiliary variables
   integer:: indistflag, burn, annotflag
   integer, dimension(:), allocatable ::trains, atemp
@@ -783,7 +783,7 @@ subroutine allocate_data
      where(trains==3) trains=1
   end if
   nt=count(trains==0)
-  allocate(pred(nind), gpin(ndist), gp(ndist), p(ndist,ncat), &
+  allocate(pred(nind), gpin(ndist), gp(ndist), p(ndist,ncat), permannot(ncat),&
            X(nt,nloci), delta(ndist),dirx(ndist), g(nloci), yadj(nt), & 
            snpindist(ndist,ncat), varindist(ndist,ncat), z(nt), s(ndist), stemp(ndist), sstemp(ncat), &
            xpx(nloci), gstore(nloci), snpstore(ndist,ncat), varstore(ndist,ncat), pstore(ndist,ncat), &
