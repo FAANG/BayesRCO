@@ -1,3 +1,5 @@
+!Version 04/06/2021, inversion of annotation and loci loops for BayesRC 
+
 ! Bayesian hierarchical models for complex trait analysis using a mixture of 
 ! normal distributions of SNP effects 
 ! Copyright (C) 2014 Gerhard Moser
@@ -22,7 +24,7 @@ use routinez
 use RDistributions
 
 implicit none
-integer :: i, j, k, kk, jj,snploc, l, aa
+integer :: i, j, k, kk, jj,snploc, l, aa, kcat
 character (len=8)  :: cdate
 character (len=10) :: ctime, ci, ca, cj
 logical :: overflow
@@ -456,6 +458,9 @@ if(mcmc) then
          do k=1,nloci
             permvec(k)=k
          enddo
+         do kcat=1,ncat
+            permannot(kcat)=kcat
+         enddo
          call compute_residuals
          each_cycle2 : do rep=1,numit
             included=0
@@ -472,7 +477,7 @@ if(mcmc) then
             if(permute) then
                call permutate(permvec,nloci)
             endif
-            
+            call permutate(permannot,ncat)
             do k=1,nloci
                snploc=permvec(k)
                gk=g(snploc)
@@ -483,7 +488,8 @@ if(mcmc) then
                   yadj=yadj+z*gk
                endif
                rhs= dot_product(yadj,z)
-               do j=1,ncat
+               do kcat=1,ncat
+                  j=permannot(kcat)
                   log_p(1,j)=dlog(p(1,j))
                   do i=2,ndist
                      log_p(i,j)=dlog(p(i,j))
