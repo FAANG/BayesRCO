@@ -1,7 +1,6 @@
-!Version 04/06/2021, inversion of annotation and loci loops for BayesRC 
-
 ! Bayesian hierarchical models for complex trait analysis using a mixture of 
 ! normal distributions of SNP effects 
+! Copyright (C) 2021 Fanny Mollandin
 ! Copyright (C) 2014 Gerhard Moser
 !
 !    This program is free software: you can redistribute it and/or modify
