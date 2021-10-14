@@ -381,9 +381,9 @@ if(mcmc) then
                      aa=a(i)
                      annotstore(i,aa)=annotstore(i,aa)+1
                   enddo
-                  write(25,'(i10,1x,i10,1x,2(E15.7,1x),20(i10,1x))',advance='no')  rep, included , & 
+                  write(25,'(i10,1x,i10,1x,2(E15.7,1x),100(i10,1x))',advance='no')  rep, included , & 
                        vara, vare, snpindist
-                  write(25,'(20E15.7,1x)') varindist
+                  write(25,'(100E15.7,1x)') varindist
                   call flush(25)
                   !          if(snpout) call output_snploc 
                end if
@@ -614,9 +614,9 @@ if(mcmc) then
                         endif
                      enddo
                   enddo
-                  write(25,'(i10,1x,i10,1x,2(E15.7,1x),20(i10,1x))',advance='no')  rep, included , & 
+                  write(25,'(i10,1x,i10,1x,2(E15.7,1x),100(i10,1x))',advance='no')  rep, included , & 
                        vara, vare, snpindist
-                  write(25,'(20E15.7,1x)') varindist
+                  write(25,'(100E15.7,1x)') varindist
                   call flush(25)
                   !          if(snpout) call output_snploc 
                end if
