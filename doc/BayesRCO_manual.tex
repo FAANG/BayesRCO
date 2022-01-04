@@ -94,20 +94,20 @@ All five Bayesian genomic prediction models included in BayesRCO exploit the sam
 
 \begin{table}[h]
     \resizebox{\linewidth}{!}{
-    \begin{tabular}{ l  l  l l}
+    \begin{tabular}{ l  l  l l l}
     \hline
-\multirow{2}{*}{Method }      & \multirow{2}{*}{SNP effect prior distribution} & \multirow{2}{*}{\# effect classes} & \multirow{2}{*}{Prior Annotations}  \\
-& & & \\ \hline
+\multirow{2}{*}{Method }      & \multirow{2}{*}{SNP effect prior distribution} & \multirow{1.5}{*}{\# effect } & \multirow{2}{*}{Prior Annotations} & \multirow{2}{*}{|A(i)|} \\
+& & classes & \\  \hline
 \\
-BayesC$\pi$      &  $\beta_i  \sim \pi\mathcal{N}(0,0)+(1-\pi)\mathcal{N}(0,\sigma_\beta^2)$                         & 2 & No\\ 
-BayesR       &  $\beta_i \sim \sum_{\ell=1}^4\pi_\ell\mathcal{N}(0,k \sigma_g^2)$                         & 4    & No                   \\  
-BayesRC      &  $\beta_i | a = A(i) \sim \sum_{\ell=1}^4\pi_{\ell,a}\mathcal{N}(0,k \sigma_g^2)$                      &4   & Yes, disjointed\\ 
-BayesRC+     &           $\beta_i | a\in \mathbf{A}(i)\sim \alert{\sum_{a\in \mathbf{A}(i)}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                 & 4   & Yes, overlapping     \\ 
-BayesRC$\pi$ &        $\beta_i | a\in \mathbf{A}(i)\sim \alert{\sum_{a\in \mathbf{A}(i)}p_{i,a}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                    &     4 & Yes, overlapping   \\  \\   \hline
+BayesC$\pi$      &  $\beta_i  \sim \pi\mathcal{N}(0,0)+(1-\pi)\mathcal{N}(0,\sigma_\beta^2)$                         & 2 & No & -\\ 
+BayesR       &  $\beta_i \sim \sum_{\ell=1}^4\pi_\ell\mathcal{N}(0,k \sigma_g^2)$                         & 4    & No    & -             \\  
+BayesRC      &  $\beta_i | A(i) \sim \sum_{\ell=1}^4\pi_{\ell,a}\mathcal{N}(0,k \sigma_g^2)$                      &4   & Yes, disjointed &  =1\\ 
+BayesRC+     &           $\beta_i |A(i)\sim \alert{\sum_{a\in A(i)}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                 & 4   & Yes, overlapping  &  $\ge$1   \\ 
+BayesRC$\pi$ &        $\beta_i | A(i)\sim \alert{\sum_{a\in A(i)}p_{i,a}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                    &     4 & Yes, overlapping &  $\ge$1   \\  \\   \hline
     \end{tabular}}
 \end{table}
 
-\noindent where $\sigma_g^2$ is the total additive genetic variance, $\pi=(\pi_1,\pi_2,\pi_3,\pi_4)$ the mixing proportions such that $\sum_{\ell=1}^4\pi_\ell=1$, $p_{i,a}$ the mixing proportions of SNP $i$ in its set of annotations $\mathbf{A}(i)$ such that $\sum_{a \in \mathbf{A}(i)}p_{i,a}=1$, and $k=\{0,10^{-4}, 10^{-3}, 10^{-2}\}$.
+\noindent where $\sigma_g^2$ is the total additive genetic variance, $\pi=(\pi_1,\pi_2,\pi_3,\pi_4)$ the mixing proportions such that $\sum_{\ell=1}^4\pi_\ell=1$, $p_{i,a}$ the mixing proportions of SNP $i$ in its set of annotations $A(i)$ such that $\sum_{a \in A(i)}p_{i,a}=1$, and $k=\{0,10^{-4}, 10^{-3}, 10^{-2}\}$.
 
 \subsection{Gibbs sampler algorithm}
 
@@ -224,7 +224,7 @@ BayesRCO is run in two steps: a first for the training data (and thus the estima
 
 \texttt{\textit{path}/bayesRCO -bfile [prefix\_learning] -out [prefix\_learning] -ncat [number of annotations] -catfile [annotation\_matrix]} \\
 
-\texttt{\textit{path}/bayesRCO -bfile [prefix\_validation] -out [prefix\_validation] -model [prefix\_learning].model -freq [prefix\_learning].frq -param [prefix\_learning].param -ncat [number of annotations] -catfile [annotation\_matrix] }
+\texttt{\textit{path}/bayesRCO -bfile [prefix\_validation] -predict -out [prefix\_validation] -model [prefix\_learning].model -freq [prefix\_learning].frq -param [prefix\_learning].param -ncat [number of annotations] -catfile [annotation\_matrix] }
 \end{tcolorbox}
 
 \subsubsection{BayesRC+}
@@ -235,7 +235,7 @@ To run BayesRC+, use the flag \texttt{-additive} in the training step:
 
 \texttt{\textit{path}/bayesRCO -bfile [prefix\_learning] -out [prefix\_learning] -ncat [number of annotations] -catfile [annotation\_matrix] -additive} \\
 
-\texttt{\textit{path}/bayesRCO -bfile [prefix\_validation] -out [prefix\_validation] -model [prefix\_learning].model -freq [prefix\_learning].frq -param [prefix\_learning].param -ncat [number of annotations] -catfile [annotation\_matrix] }
+\texttt{\textit{path}/bayesRCO -bfile [prefix\_validation] -predict -out [prefix\_validation] -model [prefix\_learning].model -freq [prefix\_learning].frq -param [prefix\_learning].param -ncat [number of annotations] -catfile [annotation\_matrix] }
 \end{tcolorbox}
 
 \subsubsection{BayesRC}
