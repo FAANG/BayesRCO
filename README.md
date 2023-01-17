@@ -27,6 +27,7 @@ A full user's guide with details on compilation, as well as a a full description
 -   *BayesCpi*: Habier, D. et al. (2011) Extension of the Bayesian alphabet for genomic selection. **BMC Bioinformatics**, 12(1):186. <https://doi.org/10.1186/1471-2105-12-186>
 -   *BayesR*: Moser, G. et al. (2015) Simultaneous discovery, estimation and prediction analysis of complex traits using a Bayesian mixture model. **PLoS Genetics**, 11(4): e1004969. <https://doi.org/10.1371/journal.pgen.1004969>
 -   *BayesRC*: MaxLeod, I. M. et al. (2016) Exploiting biological priors and sequence variants enhances QTL discovery and genomic prediction of complex traits. **BMC Genomics**, 17:144. <https://doi.org/10.1186/s12864-016-2443-6>
+- *BayesRCpi* and *BayesRC+*: Mollandin et al. (2022) Accounting for overlapping annotations in genomic prediction models of complex traits> **BMC Bioinformatics**, 23(365)> <https://doi.org/10.1186/s12859-022-04914-5>
 -   *bayesR original source code*: GitHub [repo](https://github.com/syntheke/bayesR)
 
 ## Funding
