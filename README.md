@@ -26,7 +26,7 @@ The core code of *BayesRCO* is largely based off the Fortran implementation of [
 
 If you use *BayesRCO* in your work, please cite us:
 
-Mollandin, F., Gilbert, H., Croiseau, P., and Rau, A. (2022) Accounting for overlapping annotations in genomic prediction models of complex traits. **BMC Bioinformatics** 23:365. https://dx.doi.org/10.1186/s12859-022-04914-5
+Mollandin, F., Gilbert, H., Croiseau, P., and Rau, A. (2022) Accounting for overlapping annotations in genomic prediction models of complex traits. *BMC Bioinformatics* 23:365. https://dx.doi.org/10.1186/s12859-022-04914-5
 
 ## Quick start
 
