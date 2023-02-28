@@ -2,6 +2,12 @@
 
 [![DOI](https://zenodo.org/badge/364909769.svg)](https://zenodo.org/badge/latestdoi/364909769)
 
+## Citation
+
+If you use *BayesRCO* in your research, please cite our work:
+- Mollandin et al. (2022) Accounting for overlapping annotations in genomic prediction models of complex traits. **BMC Bioinformatics**, 23(365). <https://doi.org/10.1186/s12859-022-04914-5>
+
+## Overview
 
 *BayesRCO* is a software for complex trait prediction with Bayesian hierarchical models using genome-wide genetic variation grouped into potentially overlapping annotation categories based on prior biological information (e.g., functional annotations, candidate gene lists, known causal variants).
 
@@ -26,10 +32,6 @@ Mollandin, F., Gilbert, H., Croiseau, P., and Rau, A. (2022) Accounting for over
 
 A full user's guide with details on compilation, as well as a a full description of input data formats/parameters and example scripts, can be found [here](https://github.com/fmollandin/BayesRCO/blob/main/doc/BayesRCO.pdf).
 
-## Citation
-
-If you use *BayesRCO* in your research, please cite our work:
-- Mollandin et al. (2022) Accounting for overlapping annotations in genomic prediction models of complex traits. **BMC Bioinformatics**, 23(365). <https://doi.org/10.1186/s12859-022-04914-5>
 
 ## References
 
