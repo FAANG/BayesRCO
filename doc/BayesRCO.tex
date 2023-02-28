@@ -2,16 +2,15 @@
 %% Software Manual and Technical Document Template	
 %% 									
 %% This provides an example of a software manual created in Overleaf.
-
 \documentclass{ol-softwaremanual}
 
 % Packages used in this example
 \usepackage{graphicx}  % for including images
 \usepackage{microtype} % for typographical enhancements
-\usepackage{minted}    % for code listings
+%\usepackage{minted}    % for code listings
 \usepackage{amsmath}   % for equations and mathematics
-\setminted{style=friendly,fontsize=\small}
-\renewcommand{\listoflistingscaption}{List of Code Listings}
+%\setminted{style=friendly,fontsize=\small}
+%\renewcommand{\listoflistingscaption}{List of Code Listings}
 \usepackage[a4paper,top=4.2cm,bottom=4.2cm,left=3.5cm,right=3.5cm]{geometry} % for setting page size and margins
 \usepackage{subcaption}
 \usepackage{float}
@@ -25,6 +24,7 @@
 \usepackage{hyperref}
 \usepackage{tcolorbox}
 \usepackage{natbib}
+\usepackage{lmodern}
 \bibliographystyle{abbrvnat}
 \setcitestyle{authoryear} %Citation-related commands
 
@@ -39,7 +39,7 @@
 % Frontmatter data; appears on title page
 \title{BayesRCO User Guide
 }
-\version{0.0.1}
+\version{0.0.2}
 \author{Fanny Mollandin$^{1}$, Pascal Croiseau$^{1}$, Andrea Rau$^{1,2}$\\ \vspace*{.5cm}
 {\footnotesize
 $^{1}$ Université Paris-Saclay, INRAE, AgroParisTech, GABI\\
@@ -58,6 +58,14 @@ $^{2}$ BioEcoAgro Joint Research Unit, INRAE, Université de Liège, Université
 %\listoflistings
 \newpage
 
+\section{Citing BayesRCO}
+
+If you use BayesRCO in your research, please cite our work:
+
+\begin{tcolorbox}
+Mollandin et al. (2022) Accounting for overlapping annotations in genomic prediction models of complex traits. \textit{BMC Bioinformatics}, 23(365). \url{https://doi.org/10.1186/s12859-022-04914-5}
+\end{tcolorbox}
+
 \section{Overview}
 The BayesRCO software includes five different Bayesian genomic prediction models, including three state-of-the art approaches and two novel algorithms:
 
@@ -65,8 +73,8 @@ The BayesRCO software includes five different Bayesian genomic prediction models
     \item BayesC$\pi$ \citep{habier_extension_2011}
     \item BayesR \citep{erbe_improving_2012}
     \item BayesRC \citep{macleod_exploiting_2016}
-    \item BayesRC$\pi$
-    \item BayesRC+
+    \item BayesRC$\pi$ \citep{mollandin_2022}
+    \item BayesRC+ \citep{mollandin_2022}
 \end{itemize}  
 
 All five models are Bayesian Gaussian mixture models for the genomic prediction of complex traits using genetic variation such as single nucleotide polymorphisms (SNPs), with parameters estimated using a Markov Chain Monte Carlo (MCMC) algorithm. These prediction methods also facilitate a study of the underlying genomic architecture of these traits, in particular by enabling QTL mapping. The two new methods implemented in BayesRCO, BayesRC+ and Bayes$\pi$, both aim to integrate prior categorizations of SNPs arising from multiple, potentially overlapping annotations. 
@@ -102,8 +110,8 @@ All five Bayesian genomic prediction models included in BayesRCO exploit the sam
 BayesC$\pi$      &  $\beta_i  \sim \pi\mathcal{N}(0,0)+(1-\pi)\mathcal{N}(0,\sigma_\beta^2)$                         & 2 & No & -\\ 
 BayesR       &  $\beta_i \sim \sum_{\ell=1}^4\pi_\ell\mathcal{N}(0,k \sigma_g^2)$                         & 4    & No    & -             \\  
 BayesRC      &  $\beta_i | A(i) \sim \sum_{\ell=1}^4\pi_{\ell,a}\mathcal{N}(0,k \sigma_g^2)$                      &4   & Yes, disjointed &  =1\\ 
-BayesRC+     &           $\beta_i |A(i)\sim \alert{\sum_{a\in A(i)}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                 & 4   & Yes, overlapping  &  $\ge$1   \\ 
-BayesRC$\pi$ &        $\beta_i | A(i)\sim \alert{\sum_{a\in A(i)}p_{i,a}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                    &     4 & Yes, overlapping &  $\ge$1   \\  \\   \hline
+BayesRC+     &           $\beta_i |A(i)\sim {\sum_{a\in A(i)}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                 & 4   & Yes, overlapping  &  $\ge$1   \\ 
+BayesRC$\pi$ &        $\beta_i | A(i)\sim {\sum_{a\in A(i)}p_{i,a}}\sum_{\ell=1}^4\pi_{\ell,a}N(0,k\sigma_g^2)$                    &     4 & Yes, overlapping &  $\ge$1   \\  \\   \hline
     \end{tabular}}
 \end{table}
 
@@ -134,9 +142,10 @@ The core of the BayesRCO software is based on version 0.75 of the \href{https://
 %[j'ai pas mis les autre compilateur ifort, grave ?]
 \end{itemize}
 BayesRCO can be compiled with a FORTRAN95 compiler on a Unix operating system using the following command:
-\noindent\begin{minted}{fortran}
-gfortran RandomDistributions.f90 baymodsRCO.f90 bayesRCO.f90 –o bayesRCO
-\end{minted}
+\noindent
+\begin{tcolorbox}
+\texttt{gfortran RandomDistributions.f90 baymodsRCO.f90 bayesRCO.f90 –o bayesRCO}
+\end{tcolorbox}
 
 \section{Inputs}
 
@@ -172,6 +181,8 @@ As recommended by \citet{macleod_exploiting_2016}, it is important to have suffi
 
 \subsection{General Inputs}
 
+See Table~\ref{tab:options} for a comprehensive list and description of input flags for BayesRCO, as well as their default values.
+
 \begin{table}[h!]
     \centering
     \begin{tabular}{|l|l|l|}
@@ -196,7 +207,7 @@ As recommended by \citet{macleod_exploiting_2016}, it is important to have suffi
 -gpin&effect sizes of mixtures (\% x Va)& 0.0,0.0001,0.001,0.01\\
 -seed&initial value for random number&0\\
 -predict&perform prediction&f\\
--snpout&output detailed SNP info&f\\
+%-snpout&output detailed SNP info&f\\
 -cat&output SNP categories per iteration & None\\
 -beta&output SNP effect per iteration&None\\
 -permute&permute order of SNP&f\\
@@ -209,6 +220,7 @@ As recommended by \citet{macleod_exploiting_2016}, it is important to have suffi
 -bayesCpi&run BayesC$\pi$&f\\
 \hline
     \end{tabular}
+    \caption{Comprehensive list of input options for BayesRCO.\label{tab:options}}
 \end{table}
 
 
@@ -262,7 +274,7 @@ Finally, BayesC$\pi$ can be run in a similar manner as for BayesR with the addit
 
 
 \begin{description}
-\item[Prior distributions for variance components:] Prior inverted-chi squared distribution can be specified for both additive and residual variances ($\sigma_g^2$ and $\sigme_e^2$). Scale and degrees of freedom (df) for the variance components are required. Flat (improper) distributions can be specified by setting \texttt{df} to -2. It is also possible to specify the heritability of the trait by setting \texttt{dfvara} to -3.0 (i.e. \texttt{-dfvara -3.0}). In this case the scale parameter is treated as the heritability and the SNP-based variance is set (fixed) to $\sigma_g^2$=heritability$\times \sigma_y^2$ ($\sigma_y^2$ being the phenotypic variance).
+\item[Prior distributions for variance components:] Prior inverted-chi squared distribution can be specified for both additive and residual variances ($\sigma_g^2$ and $\sigma_e^2$). Scale and degrees of freedom (df) for the variance components are required. Flat (improper) distributions can be specified by setting \texttt{df} to -2. It is also possible to specify the heritability of the trait by setting \texttt{dfvara} to -3.0 (i.e. \texttt{-dfvara -3.0}). In this case the scale parameter is treated as the heritability and the SNP-based variance is set (fixed) to $\sigma_g^2$=heritability$\times \sigma_y^2$ ($\sigma_y^2$ being the phenotypic variance).
 \item[Effect size Dirichlet prior (all):] The default is to use a uniform and almost uninformative prior for the mixture distribution with a pseudo-observation of 1 (SNP) for each class. Different priors can be specified using the \texttt{delta [num]} option. For example, \texttt{-delta 3,2,1} specifies a prior with 3, 2 and 1 pseudo-observations for classes 1 to 3 of a 3-component mixture model, \texttt{-delta 2} sets the prior to 2 for all mixture components.
 \item[Annotation Dirichlet prior (BayesRC$\pi$)] For the moment there is no parameter to change the value of the annotation assignment prior. Such an option may be added in future versions.
 \item[Mixture model:] The BayesR, BayesRC, BayesRC+ and BayesRC$\pi$ models assume that the true SNP effect is derived from a series of normal distributions. The default models uses 4 mixture distributions with SNP variances of 0, 0.0001, 0.001 and 0.01, so that the variance (S) of the j$^{\mathsf{th}}$ SNP has 4 possible values:  S1=0, S2=0.0001$\times \sigma_g^2$, S3=0.001$\times \sigma_g^2$, S4=0.01$\times \sigma_g^2$. Different mixture models can be specified using 
@@ -277,10 +289,7 @@ the \texttt{–ndist [num]} and \texttt{–gpin [num]} options. For example, \te
 
 \section{Outputs}
 
-The outputs all have the same name as specified when launching the software, followed by a suffix corresponding to their type, as follows: 
-
-\subsection{Frequency file}
-\textit{name\_output.type}: One column containing the SNP allele 2 frequency.
+The outputs all have the same name as specified when launching the software, followed by a suffix corresponding to their type, as follows: \textit{name\_output.type}
 
 \subsection{Log File}
 
@@ -292,7 +301,7 @@ Contains allele frequency of the ‘2’ allele. The suffix ‘.frq’ is append
 
 \subsection{Model File}
 
-The suffix ‘model’ is appended to the output prefix. This file contains means of the posterior samples of model parameters:
+The suffix ‘.model’ is appended to the output prefix. This file contains means of the posterior samples of model parameters:
 \begin{description}
 \item[Mean:] intercept
 \item[Nsnp:] number of SNPs in model 
@@ -306,7 +315,7 @@ The suffix ‘model’ is appended to the output prefix. This file contains mean
 
 \subsection{Hyperparameter file}
 
-The file \textit{prefix.hyp} gives posterior parameter estimates for each MCMC sample: 
+The ‘.hyp‘ file gives posterior parameter estimates for each MCMC sample: 
 
 \begin{description}
     \item[Replicate:] iteration number
@@ -321,7 +330,7 @@ The file \textit{prefix.hyp} gives posterior parameter estimates for each MCMC s
 
 \subsection{Parameter file}
 
-The suffix ‘param’ is appended to the output prefix. The SNP order is the same as the genotype input file. This file contains mean posterior estimates for each individual SNP:
+The suffix ‘.param’ is appended to the output prefix. The SNP order is the same as the genotype input file. This file contains mean posterior estimates for each individual SNP:
 
 \begin{description}
     \item[PIP\_1, ..., PIP\_k:] Posterior inclusion probabilities of the SNP in mixture classes 1 to $k$
@@ -334,22 +343,26 @@ The suffix ‘param’ is appended to the output prefix. The SNP order is the sa
 
 \subsection{Genetic value file}
 
-This file outputs the predicted genomic values (GVs). The output prefix is used to give the file name \textit{prefix.gv}.  
+This file outputs the predicted genomic values (GVs). The suffix ‘.gv‘ is appended to the output prefix.
 
 \subsection{Optional files}
 
 \begin{description}
-    \item[\texttt{-snpout}:] provide output in sparse format \texttt{mixture class:SNP#:effect size}. The SNP number (SNP \#) corresponds to the row number of the SNP in the PLINK *.bim file. 
     \item[\texttt{-cat}:] output SNP categories per iteration 
     \item[\texttt{-beta}:] output SNP effect per iteration
 \end{description}
 
-\bibliographystyle{plainnat}
-\bibliography{Biblio_110521}
+Note: the previously available \texttt{-snpout} flag, which provided output in sparse format \texttt{mixture class:SNP\#:effect size}, has been removed from the current version as it conflicted with other outputs and generated huge output files.
+%. The SNP number (SNP \#) corresponds to the row number of the SNP in the PLINK *.bim file. 
 
-\subsection*{Funding}
+\subsection{Funding}
 
 This work is part of the \href{https://www.gene-switch.eu/}{GENE-SWitCH} project that has received funding from the European Union’s Horizon 2020 Research and
 Innovation Programme under the grant agreement number 817998. 
+
+%\bibliographystyle{plainnat}
+\bibliography{BayesRCO}
+
+
 
 \end{document}

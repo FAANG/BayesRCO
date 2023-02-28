@@ -1,18 +1,27 @@
 # Toy dataset
-Here is an example of the input files, the script and the results obtained with BayesRCpi (by default).
 
-## Input files
-Divided in learning and validation datasets, each having .fam, .bim and .bed files:
-- *toy_app* for learning, 2083 individuals
-- *toy_test* for validation, 522 individuals
+This toy dataset provides an example of the input files and script needed to fit the BayesRCpi model. 
 
-2854 SNPs for both learning and validation.
+## Input files 
+The input files are as follows:
 
+- `toy_app` learning data(with .fam, .bim, and .bed files), corresponding to 2083 individuals and 2854 SNPs
+- `toy_test` validation data (with .fam, .bim, and .bed files), corresponding to 522 individuals and 2854 SNPs. Note that the final column of `toy_test.fam` must contain `NA` to enable prediction.
+- `toy_annot.txt`, providing binary annotation assignments (here, corresponding to 4 different categories). In this example, we randomly assigned SNPs to annotations 1, 2, and 3 with probability 0.1, 0.2, and 0.3. The 4th annotation corresponds to an "other" category for all remaining SNPs. Note that each row (SNP) contains at least one 1. In this example, some SNPs have been assigned to multiple annotation categories: 234 SNPs are annotated in 2 categories, and 17 SNPs are annotated in 3 categories.
 
-4 annotations are used here, displayed in the *toy_annot.txt* file randomly sampled with probability 0.1, 0.2 and 0.3 to be in annotation 1, 2 and 3 respectively, the last annotation gathering the SNP not sampled in the annotations 1, 2 and 3. This create overlaps: 234 SNPs are in 2 annotations, 17 SNPs are in 3 annotations.
-
-## Script file
-*script_bayesRCO.sh*, set for 5000 iterations, discarding the first 1000 for burnin. All the parameters are set by default. As some overlaps are present in the annotation, without the --additive flag BayesRCpi is run by default.
+BayesRCpi can be fit using the `script_bayesRCO.sh` script. Here, we have requested 5000 iterations, discarding the first 1000 as a burn-in. All other parameters are set to default values. As some SNPs have multiple annotations, by default BayesRCpi is run (to run BayesRC+, the `--additive` flag should be used).
 
 ## Results files
-All the toy results files, .frq, .model, .hyp, .param and .gv are computed for BayesRCpi and the parameters set in the script file.
+After running the `script_bayesRCO.sh`, the following results files are produced:
+
+- `toy_app.frq`
+- `toy_app.model`
+- `toy_app.hyp`
+- `toy_app.param`
+- `toy_app.log`
+- `toy_app.gv`
+
+- `toy_test.log`
+- `toy_test.gv`
+
+

@@ -39,7 +39,7 @@ call load_categories
 
 if(mcmc) then
    open(unit=22,file=logfil,status='unknown',form='formatted')
-   write(22,901) 'Program BayesR'
+   write(22,901) 'Program BayesRCO'
    write(22,908) 'Run started at',cdate(1:4),cdate(5:6),cdate(7:8),ctime(1:2),ctime(3:4),ctime(5:6)
    write(22,902) 'Prefix for input files',trim(inprefix)
    write(22,902) 'Prefix for output files',trim(outprefix)

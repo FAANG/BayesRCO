@@ -18,9 +18,18 @@ In addition, *BayesRCO* includes two novel extensions of *BayesRC* to incorporat
 
 The core code of *BayesRCO* is largely based off the Fortran implementation of [bayesR](https://github.com/syntheke/bayesR/tree/master/old) (version 0.75).
 
+If you use *BayesRCO* in your work, please cite us:
+
+Mollandin, F., Gilbert, H., Croiseau, P., and Rau, A. (2022) Accounting for overlapping annotations in genomic prediction models of complex traits. **BMC Bioinformatics** 23:365. https://dx.doi.org/10.1186/s12859-022-04914-5
+
 ## Quick start
 
 A full user's guide with details on compilation, as well as a a full description of input data formats/parameters and example scripts, can be found [here](https://github.com/fmollandin/BayesRCO/blob/main/doc/BayesRCO.pdf).
+
+## Citation
+
+If you use *BayesRCO* in your research, please cite our work:
+- Mollandin et al. (2022) Accounting for overlapping annotations in genomic prediction models of complex traits. **BMC Bioinformatics**, 23(365). <https://doi.org/10.1186/s12859-022-04914-5>
 
 ## References
 
